@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="text-center" id="product-name"></h1>
+        <div class="card">
+            <div class="card-body">
+                <p id="product-description"><strong>Description: </strong></p>
+                <p id="product-price"><strong>Price: </strong></p>
+                <p id="product-category"><strong>Category: </strong></p> <!-- Category display -->
+                <button id="delete-button" class="btn btn-danger">Delete Product</button>
+                <a href="index.html" class="btn btn-secondary">Back to Product List</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        async function getProductDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            try {
+                const response = await axios.get(`http://127.0.0.1:8000/products/${productId}/`);
+                console.log(response.data); // Check the response structure in the console
+
+                // Display product details
+                document.getElementById('product-name').innerText = response.data.name;
+                document.getElementById('product-description').innerHTML = `<strong>Description: </strong>${response.data.description}`;
+                document.getElementById('product-price').innerHTML = `<strong>Price: </strong>$${response.data.price}`;
+
+                // Check if category exists and display
+                if (response.data.category && response.data.category.length > 0) {
+                    const categoryNames = response.data.category.map(cat => cat.name).join(', '); // Get category names
+                    document.getElementById('product-category').innerHTML = `<strong>Category: </strong>${categoryNames}`;
+                } else {
+                    document.getElementById('product-category').innerHTML = `<strong>Category: </strong>Not Available`;
+                }
+
+                // Add delete button functionality
+                document.getElementById('delete-button').onclick = async () => {
+                    await deleteProduct(productId);
+                };
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+            }
+        }
+
+        async function deleteProduct(productId) {
+            try {
+                await axios.delete(`http://127.0.0.1:8000/products/${productId}/`);
+                alert('Product deleted successfully!');
+                // Redirect back to product list
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Failed to delete the product.');
+            }
+        }
+
+        // Load product details on window load
+        window.onload = getProductDetails;
+    </script>
+</body>
+</html>
