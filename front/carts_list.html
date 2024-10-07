@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carts</title>
+</head>
+<body>
+    <h1>All Carts</h1>
+    <ul>
+        {% for cart in carts %}
+            <li>Cart ID: {{ cart.id }} | User: {{ cart.user.username }}</li>
+        {% empty %}
+            <li>No carts available.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
